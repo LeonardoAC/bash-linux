@@ -1,0 +1,33 @@
+# este arquivo servira como um controller.
+# ficara "escutando" a escolha do menu e chamara as telas (views).
+
+#inicializa com um valor fora do menu.
+opcaoMenu=${opcaoMenu-99}
+while [ $opcaoMenu -ne 0 ]
+do
+	case $opcaoMenu in
+		1)
+			menu
+			interfaceAdd
+		;;
+		2)
+			menu
+			interfaceDel
+		;;
+		3)
+			menu
+			interfaceLista
+		;;
+		4)
+			menu
+			interfaceSearch
+		;;
+		*)
+			# nenhuma das respostas anteriores
+			# pula para o menu
+		;;
+	esac
+	menu
+	read -p "MENU opcao: " -n 1 opcaoMenu
+done
+interfaceTchau

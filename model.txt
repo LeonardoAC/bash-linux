@@ -1,0 +1,72 @@
+# Aqui, colocaremos as classes
+# Constantes
+declare -r namefile=agenda-nome.dat
+declare -r phonefile=agenda-numero.dat
+declare -a arrayRetorno
+
+
+function classeInsereContato(){
+	# faz a insercao dos dados	
+	# cria uma Chave primaria
+	PK=$(date +"%d%m%y%H%M%S")
+	# Insere os dados
+	# nome e numero em arquivos separados, ligados pela PK
+	echo $PK $nome >> $namefile
+	echo $PK $numero >> $phonefile
+	echo $PK $numero2 >> $phonefile
+	# Obs: O uso da PK e importante para associar os telefones aos nomes
+	# obs2: 1 nome insere n numeros
+}
+
+function classeVerifSeExisteContato(){
+	# O array recebera os varios nomes parecidos, informados pelo user
+    # inicializa array
+    arrayRetorno=${arrayRetorno=0}
+	# verifica qual parametro nao esta vazio	
+	if [ -n $nome ]
+	then			
+		# procura no arquivo de nome
+        arrayRetorno=($(grep $nome $namefile))
+	elif [ -n $numero ]
+	then
+		# procura no arquivo de numeros
+		arrayRetorno=($(grep $numero $phonefile))				
+	else
+		arrayRetorno[0]="Erro ao deletar contato. Tente novamente <ENTER>"
+	fi	
+	#echo ${arrayRetorno} #retorno
+}
+
+function classeDeletaContato(){
+	# Classe responsavel por deletar o registro informado
+	# Se o dado existir, pega a chave primaria do registro
+	classeVerifSeExisteContato_retornaPK $nome $numero	
+	echo "PK => " $PK
+	# Varre todos os arquivos, deletando os registros contendo a PK informada
+	
+	# fim da funcao
+	return 1 
+}
+
+function classeSorteiaFrase(){
+	# Declara um array	
+	declare -a FRASES
+	# Alimenta-o com frases	
+	FRASES[0]="Te vejo depois!"
+	FRASES[1]="Fui..."
+	FRASES[2]="Ate mais!"
+	FRASES[3]="Tchau!"
+	FRASES[4]="Volte em breve!"
+	FRASES[5]="Despedindo-se..."
+	FRASES[6]=" :_( "
+	FRASES[7]="See you soon"
+	FRASES[8]="Espero que tenha gostado!"
+	FRASES[9]="Ate a proxima!"
+	# sorteia um numero entre 0 e 9
+	
+	# Gera um indice randomico entre 0 e 9
+	local indice=$((RANDOM%9+0))
+	# retorna a frase sorteada
+	echo ${FRASES[$indice]}
+}
+

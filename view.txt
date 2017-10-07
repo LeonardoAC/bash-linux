@@ -1,0 +1,150 @@
+# Este arquivo sera a parte visual. Aquilo ao qual o usuario ira interagir. 
+
+function menu(){
+	# limpa a tela e exibe o menu principal
+	clear
+	echo "+--------------------------------+"
+	echo "|        A G E N D E X           |"
+	echo "|                                |"
+	echo "|            (1.0)               |"
+	echo "|                                |"
+	echo "|    by Leonardo A. Carrilho     |"
+	echo "|                                |"
+	echo "+------------ MENU --------------+"
+	echo "|                                |"
+	echo "|        1 - Add contato         |"
+	echo "|        2 - Deleta contato      |"
+	echo "|        3 - Lista tudo          |"
+	echo "|        4 - Busca               |"
+	echo "|        0 - SAIR                |"
+	echo "|                                |"
+	echo "+--------------------------------+"
+	echo ""
+	#limpa as variaveis
+	nome=${nome=}
+	numero=${numero=}
+	PK=${PK=}
+}
+
+function interfaceAdd(){
+	#fornece uma interface para inserir contato
+	local nome numero opcao	
+	echo "     [ADD CONTATO]"
+	echo ""
+	local nome numero	
+	read -p "NOME: " nome
+	read -p "NUMERO: " numero
+	read -rp "Inserir outro telefone para $nome? (S/N)" -n 1 opcao
+	if [[ $opcao == "S" || $opcao == "s" ]]
+	then
+		read -rp " [+] novo numero: " numero2
+	fi
+	classeInsereContato $nome $numero $numero2
+	read -rsp " Contato inserido com sucesso! <ENTER>"
+}
+
+function interfaceDel(){
+	#fornece a interface para a delecao dos dados
+	local nome numero
+	echo "     [DELETAR CONTATO]"
+	echo ""
+	echo "[1] Buscar por nome"
+	echo "[2] Buscar por numero"
+	read -rsp "Opcao da busca: " -n 1 key
+	if [ $key == 1 ]
+	then
+		read -p "Informe o nome: " nome
+	elif [ $key == 2 ]
+	then
+		read -p "Informe o numero: " numero
+	else
+		menu
+	fi
+	# chama a "classe" responsavel pela delecao
+	if [ $key == 1 || $key == 2 || $key -eq 1 || $key -eq 2 ] 
+	then	
+		classeDeletaContato $nome $numero
+		if [ $classeDeletaContato -eq 1 ]
+		then
+			read -rp "Contato deletado <ENTER>"
+		else
+			read -rp "falha ao deletar contato <ENTER>"
+		fi
+	fi
+	return
+}
+
+function interfaceLista(){
+	echo "     [TODOS OS SEUS CONTATOS]"
+	echo ""
+	local cor=${cor=3}
+    local i=${i=0}
+	# Exibe os 2 arquivos (nome e numero) mesclados e em coluna
+	#pr -m -t $namefile $phonefile
+	# transfere cada linha do arquivo para um indice do array
+	mapfile -t arrayNome < $namefile
+	mapfile -t arrayNumero < $phonefile
+	for ((i=0; i < ${#arrayNome[@]}; i++)) 
+	do
+		# zebra a linha
+		if [ $(($i % 2)) -eq 0 ]
+		then
+			# par			
+			cor=2
+		else
+			# impar
+			cor=3
+		fi		
+		# altera a cor do terminal		
+		printf $(tput setaf $cor) $(tput setab 5)
+		# exibe a saida		
+		echo $i ${arrayNome[$i]:12:100} ${arrayNumero[$i]:12:100}
+		# reseta para cor default		
+		printf $(tput sgr0)
+	done
+	echo ""
+	echo "+-----------------------+----------------------------------+"	
+	read -rp "|     Sair <ENTER>      |   Editar <nº da linha>: "
+}
+
+function interfaceSearch(){
+	local nome numero i
+    local i=${i=0}
+    #declare -a linha	
+	echo "     [BUSCAR CONTATO]"
+	echo
+	echo "[1] Buscar por nome"
+	echo "[2] Buscar por numero"
+	read -rp "Opcao da busca: " -n 1 key
+	case $key in
+		1) 
+			read -p " Informe o nome: " nome
+			classeVerifSeExisteContato $nome
+		;;
+		2) 
+			read -p " Informe o numero: " numero
+			classeVerifSeExisteContato $numero
+		;;
+		*) 
+			read -p " Opcao nao existe! <ENTER>"
+		;;
+	esac
+	# recebe o valor	
+	arrayRetorno=$(classeVerifSeExisteContato)
+	# exibe o resultado	
+	for ((i=0; i < ${#arrayRetorno[@]}; i++)) 
+	do
+	   echo "Linha [$i] ${arrayRetorno[$i]}"
+	done
+	# Exibe opcoes ao user
+	echo ""
+	echo "+------------------+---------------------------+"
+	read -rp "|   Sair <ENTER>   |   Ver mais <Nº linha>: " key	
+}
+
+function interfaceTchau(){
+	local x=${x=null}	
+	clear
+	x=$(classeSorteiaFrase)
+	echo "[AGENDEX]=> "$x
+}
