@@ -15,7 +15,7 @@ function menu(){
 	echo "|        1 - Add contato         |"
 	echo "|        2 - Deleta contato      |"
 	echo "|        3 - Lista tudo          |"
-	echo "|        4 - Busca               |"
+	echo "|        4 - Busca/ Edita        |"
 	echo "|        0 - SAIR                |"
 	echo "|                                |"
 	echo "+--------------------------------+"
@@ -24,6 +24,7 @@ function menu(){
 	nome=${nome=}
 	numero=${numero=}
 	PK=${PK=}
+    key=${key=}
 }
 
 function interfaceAdd(){
@@ -81,7 +82,7 @@ function interfaceLista(){
     local i=${i=0}
 	# Exibe os 2 arquivos (nome e numero) mesclados e em coluna
 	#pr -m -t $namefile $phonefile
-	# transfere cada linha do arquivo para um indice do array
+	# envia cada linha do arquivo para um indice do array
 	mapfile -t arrayNome < $namefile
 	mapfile -t arrayNumero < $phonefile
 	for ((i=0; i < ${#arrayNome[@]}; i++)) 
@@ -103,43 +104,83 @@ function interfaceLista(){
 		printf $(tput sgr0)
 	done
 	echo ""
-	echo "+-----------------------+----------------------------------+"	
-	read -rp "|     Sair <ENTER>      |   Editar <nº da linha>: "
+	echo "+------------------+---------------------------+"
+	read -rp "|   Sair <ENTER>   |   Mais <nº da linha>: " key
+    # Se for numero, entra na condicao
+    local varDe1a99='^([1-9]|[1-9]{1}[0-9]{1})$'
+    if [[ $key =~ $varDe1a99 ]]
+    then
+        # Prepara os parametros para passar para function interfaceSearch
+        nome=${arrayNome[$key]:12:100}
+        interfaceSearch $key $nome        
+    fi
 }
 
 function interfaceSearch(){
-	local nome numero i
+	#local nome numero
     local i=${i=0}
     #declare -a linha	
-	echo "     [BUSCAR CONTATO]"
-	echo
-	echo "[1] Buscar por nome"
-	echo "[2] Buscar por numero"
-	read -rp "Opcao da busca: " -n 1 key
-	case $key in
-		1) 
-			read -p " Informe o nome: " nome
-			classeVerifSeExisteContato $nome
-		;;
-		2) 
-			read -p " Informe o numero: " numero
-			classeVerifSeExisteContato $numero
-		;;
-		*) 
-			read -p " Opcao nao existe! <ENTER>"
-		;;
-	esac
-	# recebe o valor	
+	
+	# Se key estiver vazia (-z), pede que o user digite algo
+    # Se key já contiver um valor, vai para o case
+    if [ -z $key ]
+    then
+        echo "     [BUSCAR CONTATO]"
+	    echo
+        echo "[0] Buscar por nome"
+	    echo "[1] Buscar por numero"
+        read -rp "Opcao da busca: " -n 1 key    
+        case $key in
+            0) 
+                read -p " Informe o nome: " nome
+                classeVerifSeExisteContato $nome
+            ;;
+            1) 
+                #read -p " Informe o numero: " numero
+                #classeVerifSeExisteContato $numero
+                read -p "Esta funcao esta temporariamente desabilitada :( "
+                continue
+            ;;
+            *) 
+                read -p " Opcao nao existe! <ENTER>"
+                continue
+            ;;
+        esac
+    fi
+    # recebe o valor da busca
 	arrayRetorno=$(classeVerifSeExisteContato)
-	# exibe o resultado	
+    #
+    interfaceDetalhesDoContato
+}
+
+function interfaceDetalhesDoContato(){
+    
+	clear
+    # exibe o resultado	
 	for ((i=0; i < ${#arrayRetorno[@]}; i++)) 
 	do
-	   echo "Linha [$i] ${arrayRetorno[$i]}"
+	   echo " [$i] ${arrayRetorno[$i]}"
 	done
 	# Exibe opcoes ao user
 	echo ""
 	echo "+------------------+---------------------------+"
-	read -rp "|   Sair <ENTER>   |   Ver mais <Nº linha>: " key	
+	read -rp "|   Sair <ENTER>   |   Mais <nº da linha>: " key
+    # pega a chave primaria
+    PK=${arrayRetorno[$key]:0:12}
+    # busca no arquivo de numeros pela PK
+    declare -a x
+    x=$(grep $PK $phonefile)
+    # Exibe toda informacao referente ao contato escolhido
+    clear
+    echo "              [INFO CONTATO]"
+    echo ""
+    echo "+---------------------------------------------------+"
+    echo "| NOME     : " ${arrayRetorno[$key]:12:100}
+    echo "| NUMERO 1 : " ${x[0]:12:50}
+    echo "| NUMERO 2 : " ${x[1]:12:50}
+    echo "+---------------+-------------+---------------------+"
+    read -rp "| Sair <ENTER> | Editar <1> | Deletar <2>: " -n 1 key
+    echo $key
 }
 
 function interfaceTchau(){

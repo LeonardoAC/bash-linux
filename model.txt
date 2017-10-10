@@ -14,7 +14,7 @@ function classeInsereContato(){
 	echo $PK $nome >> $namefile
 	echo $PK $numero >> $phonefile
 	echo $PK $numero2 >> $phonefile
-	# Obs: O uso da PK e importante para associar os telefones aos nomes
+	# Obs: O uso da PK e importante para associar um nome a mais de um telefone
 	# obs2: 1 nome insere n numeros
 }
 
@@ -23,18 +23,20 @@ function classeVerifSeExisteContato(){
     # inicializa array
     arrayRetorno=${arrayRetorno=0}
 	# verifica qual parametro nao esta vazio	
-	if [ -n $nome ]
+    if [ -n $nome ]
 	then			
 		# procura no arquivo de nome
-        arrayRetorno=($(grep $nome $namefile))
-	elif [ -n $numero ]
-	then
-		# procura no arquivo de numeros
-		arrayRetorno=($(grep $numero $phonefile))				
+        # IFS recebe delimitador de fim de linha '\n'
+        IFS=$'\n' arrayRetorno=($(grep -i $nome $namefile))
+	#elif [ -n $numero ]
+	#then
+		# O grep demora demais para ler numero. trava o prompt...
+        # procura no arquivo de numeros
+		# IFS=$'\n' arrayRetorno=($(grep $numero $phonefile))
 	else
 		arrayRetorno[0]="Erro ao deletar contato. Tente novamente <ENTER>"
 	fi	
-	#echo ${arrayRetorno} #retorno
+	echo ${arrayRetorno} #retorno
 }
 
 function classeDeletaContato(){
