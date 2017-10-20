@@ -5,6 +5,7 @@
 
 # concatena os 3 arquivos em um unico e temporario arquivo
 echo "#!/bin/bash" > runtime.sh
+#cat model2.txt view2.txt controller2.txt >> runtime.sh
 cat model.txt view.txt controller.txt >> runtime.sh
 # atribui chmod 777
 chmod 777 runtime.sh 

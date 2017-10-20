@@ -1,0 +1,44 @@
+# este arquivo servira como um controller.
+# ficara "escutando" a escolha do menu e chamara as telas (views).
+
+#inicializa com um valor fora do menu.
+key=${key=}
+while [ $key -ne 0 ]
+do
+	case $key in
+		1)
+			# reseta as variaveis globais
+            model_ResetaVariaveis
+            # Exibe o menu principal
+            view_MostraMenu
+            # Exibe interface Nome e Numero
+            view_MostraAddContato
+            model_Contato
+            # le resposta (inserir novo numero?)
+            if [ model_LeInput -eq 1 ]
+            then
+                local varInserirNumero=1
+                model_Contato $varInserirNumero
+            fi
+		;;
+		2)
+			menu
+			interfaceDel
+		;;
+		3)
+			menu
+			interfaceLista
+		;;
+		4)
+			menu
+			interfaceSearch
+		;;
+		*)
+			# nenhuma das respostas anteriores
+			echo "Opcao invalida"
+		;;
+	esac
+	menu
+	read -p "MENU opcao: " -n 1 opcaoMenu
+done
+interfaceTchau

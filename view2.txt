@@ -1,6 +1,6 @@
 # Este arquivo sera a parte visual. Aquilo ao qual o usuario ira interagir. 
 
-function menu(){
+function view_MostraMenu(){
 	# limpa a tela e exibe o menu principal
 	clear
 	echo "+--------------------------------+"
@@ -20,27 +20,23 @@ function menu(){
 	echo "|                                |"
 	echo "+--------------------------------+"
 	echo ""
-	#limpa as variaveis
+	
+function model_ResetaVariaveis(){
+    #limpa as variaveis
 	nome=${nome=}
 	numero=${numero=}
 	PK=${PK=}
     key=${key=}
     arrayRetorno=${arrayRetorno=}
-}
+}   
 
-function interfaceAdd(){
+function view_MostraAddContato(){
 	#fornece uma interface para inserir contatoe
 	echo "     [ADD CONTATO]"
 	echo ""
 	read -p "NOME: " nome
 	read -p "NUMERO: " numero
 	read -rp "Inserir outro telefone para $nome? (S/N)" -n 1 key
-	if [[ $key == "S" || $key == "s" ]]
-	then
-		read -rp " [+] novo numero: " numero2
-	fi
-	classeInsereContato $nome $numero $numero2
-	read -rsp " Contato inserido com sucesso! <ENTER>"
 }
 
 function interfaceDel(){
@@ -50,28 +46,6 @@ function interfaceDel(){
 	echo ""
 	echo "[1] Buscar por nome"
 	echo "[2] Buscar por numero"
-	read -rsp "Opcao da busca: " -n 1 key
-	if [ $key == 1 ]
-	then
-		read -p "Informe o nome: " nome
-	elif [ $key == 2 ]
-	then
-		read -p "Informe o numero: " numero
-	else
-		menu
-	fi
-	# chama a "classe" responsavel pela delecao
-	if [ $key == 1 || $key == 2 || $key -eq 1 || $key -eq 2 ] 
-	then	
-		classeDeletaContato $nome $numero
-		if [ $classeDeletaContato -eq 1 ]
-		then
-			read -rp "Contato deletado <ENTER>"
-		else
-			read -rp "falha ao deletar contato <ENTER>"
-		fi
-	fi
-	return
 }
 
 function interfaceLista(){
@@ -105,14 +79,6 @@ function interfaceLista(){
 	echo ""
 	echo "+------------------+---------------------------+"
 	read -rp "|   Sair <ENTER>   |   Mais <nº da linha>: " key
-    # Se for numero, entra na condicao
-    local varDe1a99='   ^([1-9]|[1-9]{1}[0-9]{1})$'
-    if [[ $key =~ $varDe1a99 ]]
-    then
-        # Prepara os parametros para passar para function interfaceSearch
-        enviaNome=${arrayNome[$key]:12:100}
-        interfaceSearch $key $enviaNome        
-    fi
 }
 
 function interfaceSearch(){
@@ -191,7 +157,5 @@ function interfaceTchau(){
 	local x=${x=null}	
 	clear
 	x=$(classeSorteiaFrase)
-	printf $(tput setaf 2) #cor da fonte
-    echo "[AGENDEX]=> "$x
-    printf $(tput sgr0) # reseta cor
+	echo "[AGENDEX]=> "$x
 }

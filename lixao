@@ -1,0 +1,45 @@
+add contato--------------------------------------
+
+if [[ $key == "S" || $key == "s" ]]
+	then
+		read -rp " [+] novo numero: " numero2
+	fi
+	classeInsereContato $nome $numero $numero2
+	read -rsp " Contato inserido com sucesso! <ENTER>"
+    
+    
+deleta contato------------------------------------
+
+read -rsp "Opcao da busca: " -n 1 key
+	if [ $key == 1 ]
+	then
+		read -p "Informe o nome: " nome
+	elif [ $key == 2 ]
+	then
+		read -p "Informe o numero: " numero
+	else
+		menu
+	fi
+	# chama a "classe" responsavel pela delecao
+	if [ $key == 1 || $key == 2 || $key -eq 1 || $key -eq 2 ] 
+	then	
+		classeDeletaContato $nome $numero
+		if [ $classeDeletaContato -eq 1 ]
+		then
+			read -rp "Contato deletado <ENTER>"
+		else
+			read -rp "falha ao deletar contato <ENTER>"
+		fi
+	fi
+    
+    
+lista contatos--------------------------------------
+
+# Se for numero, entra na condicao
+    local varDe1a99='   ^([1-9]|[1-9]{1}[0-9]{1})$'
+    if [[ $key =~ $varDe1a99 ]]
+    then
+        # Prepara os parametros para passar para function interfaceSearch
+        enviaNome=${arrayNome[$key]:12:100}
+        interfaceSearch $key $enviaNome        
+    fi

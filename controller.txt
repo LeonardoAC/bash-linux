@@ -24,7 +24,7 @@ do
 		;;
 		*)
 			# nenhuma das respostas anteriores
-			# pula para o menu
+			echo "Opcao invalida"
 		;;
 	esac
 	menu
